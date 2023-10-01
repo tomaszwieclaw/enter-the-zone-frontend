@@ -8,30 +8,24 @@ import * as moment from 'moment';
 })
 
 export class CalendarWeekComponent implements OnInit {
-  // public weekday = [ 'Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday' ];
   public weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'sunday' ];
-
 
   timeColumn: string[] = [];
   events: ZoneUIEvent[] = [];
 
   ngOnInit(): void {
     this.timeColumn = this.getTime(9, 0, 8, 15);
-    console.log('this.timeColumn', this.timeColumn);
     this.getShedule().weeklySchedules.map((eventDay: { [key: string]: any }) => {
       return this.weekdays.map(dayOfWeek => {
         eventDay[dayOfWeek].scheduledEvents
           // .filter((event: ScheduledEvent) => event.id === 'f87e4167-8748-4c8a-9af8-3e4da747658c')
           .map((event: ScheduledEvent) => {
             let dayIndex = this.weekdays.indexOf(dayOfWeek);
-            console.log('event', event);
-
-            let eventStartAndDuration = this.getEventStartAndDuration(event.startTime, event.endTime);
-            console.log('eventStartAndDuration', eventStartAndDuration);
+            let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
 
             this.events.push({
-              height: eventStartAndDuration.eventDuration,
-              top: eventStartAndDuration.eventStart,
+              height: eventTimeParameters.eventDuration,
+              top: eventTimeParameters.eventStart,
               left: dayIndex === 0 ? 135 : dayIndex * 135,
               name: event.eventName,
               width: 135,
@@ -63,16 +57,14 @@ export class CalendarWeekComponent implements OnInit {
     return String(num).padStart(2, '0');
   }
 
-  private getEventStartAndDuration(startTime: string, endTime: string) {
-    let calendartStart = moment('09:00:00', 'HH:mm:ss');
+  private getEventTimeParameters(startTime: string, endTime: string) {
+    let calendartStart = moment('09:00:00', 'HH:mm:ss'); //TODO Refactor
     let eventStart = moment(startTime, 'HH:mm:ss');
     let eventEnd = moment(endTime, 'HH:mm:ss');
 
     let eventStartHrs = moment.duration(eventStart.diff(calendartStart)).asHours();
     let eventDurationHrs = moment.duration(eventEnd.diff(eventStart)).asHours();
 
-    console.log('------->>>>', eventStartHrs);
-    // console.log(eventStart, eventEnd, data/1000/60/60, eventStart);
     return {
       eventStart: eventStartHrs === 0 ? 30 : (eventStartHrs * (60 / 15)) * 30,
       eventDuration: eventDurationHrs * (60 / 15) * 30,
