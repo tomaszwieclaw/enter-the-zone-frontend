@@ -30,33 +30,13 @@ export class CalendarWeekComponent implements OnInit {
       width: '600px',
       enterAnimationDuration,
       exitAnimationDuration,
-    });
+    }).afterClosed().subscribe(() => {
+      this.fetchData();
+    })
   }
 
   ngOnInit(): void {
-    this.httpService.getSchedules().subscribe(response => {
-      console.log('response', response.weeklySchedules);
-      response.weeklySchedules.map((eventDay: { [key: string]: any }) => {
-        return this.weekdays.map(dayOfWeek => {
-          if (eventDay[dayOfWeek]) {
-            eventDay[dayOfWeek].scheduledEvents.map((event: ScheduledEvent) => {
-              let dayIndex = this.weekdays.indexOf(dayOfWeek);
-              let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
-              console.log(dayOfWeek, dayIndex);
-              let eventColor = this.getEventColor(event.eventType);
-              this.events.push({
-                height: eventTimeParameters.eventDuration,
-                top: eventTimeParameters.eventStart,
-                left: dayIndex === 0 ? 100 : dayIndex * 215 + 100,
-                name: event.eventName,
-                width: 215,
-                color: eventColor,
-              });
-            });
-          }
-        });
-      });
-    });
+    this.fetchData()
     this.timeColumn = this.getTimeLine(CalendarWeekComponent.CALENDAR_START_HOUR, 0, 10, 15);
   }
 
@@ -95,134 +75,6 @@ export class CalendarWeekComponent implements OnInit {
     };
   }
 
-  private getShedule() {
-    return {
-      'lastUpdated': '2023-10-01T10:32:48.6921245',
-      'today': '2023-10-02',
-      'weeklySchedules': [
-        {
-          'monday': {
-            'date': '2023-10-02',
-            'workdayStartTime': '09:00:00',
-            'workdayEndTime': '17:00:00',
-            'scheduledEvents': [
-              {
-                'id': 'f87e4167-8748-4c8a-9af8-3e4da747658c',
-                'eventName': 'Daily Scrum',
-                'startTime': '09:00:00',
-                'endTime': '09:15:00',
-                'totalDurationMin': 15,
-              },
-              {
-                'id': 'cfc4611b-705d-425d-b5ea-219ed516b4a0',
-                'eventName': 'Tech Interview',
-                'startTime': '10:00:00',
-                'endTime': '11:30:00',
-                'totalDurationMin': 90,
-              },
-              {
-                'id': 'a07f1a75-1c9b-4ee0-bdcb-1d639e3fb44c',
-                'eventName': 'In the zone (1)',
-                'startTime': '12:00:00',
-                'endTime': '13:00:00',
-                'totalDurationMin': 60,
-              },
-              {
-                'id': 'def63efc-70d5-438d-8f14-db9b8bfb18cd',
-                'eventName': 'Lunch',
-                'startTime': '13:15:00',
-                'endTime': '14:00:00',
-                'totalDurationMin': 45,
-              },
-              {
-                'id': '5e9250af-ff20-4d7d-8bcc-2eb5e1f74fdc',
-                'eventName': 'In the zone (2)',
-                'startTime': '14:15:00',
-                'endTime': '15:15:00',
-                'totalDurationMin': 60,
-              },
-              {
-                'id': 'e3f60da6-33d2-4c25-9a2f-7f6c51ec1ab8',
-                'eventName': 'Management Duties',
-                'startTime': '15:30:00',
-                'endTime': '17:00:00',
-                'totalDurationMin': 90,
-              },
-            ],
-          },
-          'tuesday': {
-            'date': '2023-10-03',
-            'workdayStartTime': '09:00:00',
-            'workdayEndTime': '17:00:00',
-            'scheduledEvents': [
-              {
-                'id': '1f22aed0-5677-4861-a648-e1cba6ee3e88',
-                'eventName': 'Daily Scrum',
-                'startTime': '09:00:00',
-                'endTime': '09:15:00',
-                'totalDurationMin': 15,
-              },
-            ],
-          },
-          'wednesday': {
-            'date': '2023-10-04',
-            'workdayStartTime': '09:00:00',
-            'workdayEndTime': '17:00:00',
-            'scheduledEvents': [
-              {
-                'id': '9ac629df-c339-4e73-a7ca-e74d60e4186b',
-                'eventName': 'Daily Scrum',
-                'startTime': '09:00:00',
-                'endTime': '09:15:00',
-                'totalDurationMin': 15,
-              },
-            ],
-          },
-          'thursday': {
-            'date': '2023-10-05',
-            'workdayStartTime': '09:00:00',
-            'workdayEndTime': '17:00:00',
-            'scheduledEvents': [
-              {
-                'id': '893fdfca-b837-4b27-b6df-383a669a6423',
-                'eventName': 'Daily Scrum',
-                'startTime': '09:00:00',
-                'endTime': '09:15:00',
-                'totalDurationMin': 15,
-              },
-            ],
-          },
-          'friday': {
-            'date': '2023-10-06',
-            'workdayStartTime': '09:00:00',
-            'workdayEndTime': '17:00:00',
-            'scheduledEvents': [
-              {
-                'id': '8042434b-0ef0-466d-9bed-76cd00fdaa1e',
-                'eventName': 'Daily Scrum',
-                'startTime': '09:00:00',
-                'endTime': '09:15:00',
-                'totalDurationMin': 15,
-              },
-            ],
-          },
-          'saturday': {
-            'date': '2023-10-07',
-            'workdayStartTime': null,
-            'workdayEndTime': null,
-            'scheduledEvents': [],
-          },
-          'sunday': {
-            'date': '2023-10-08',
-            'workdayStartTime': null,
-            'workdayEndTime': null,
-            'scheduledEvents': [],
-          },
-        },
-      ],
-    };
-  }
-
   private getEventColor(eventType: EventType): string {
     switch (eventType.toString()) {
       case EventType.FIXED_MEETING:
@@ -245,6 +97,34 @@ export class CalendarWeekComponent implements OnInit {
     this.httpService.recalculate().subscribe(repsonse => {
       this.isLoading = false;
       console.log('Recalculation done', repsonse);
+      this.fetchData()
+
+    });
+  }
+
+  private fetchData() {
+    this.events = [];
+    this.httpService.getSchedules().subscribe(response => {
+      response.weeklySchedules.map((eventDay: { [key: string]: any }) => {
+        return this.weekdays.map(dayOfWeek => {
+          if (eventDay[dayOfWeek]) {
+            eventDay[dayOfWeek].scheduledEvents.map((event: ScheduledEvent) => {
+              let dayIndex = this.weekdays.indexOf(dayOfWeek);
+              let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
+              console.log(dayOfWeek, dayIndex);
+              let eventColor = this.getEventColor(event.eventType);
+              this.events.push({
+                height: eventTimeParameters.eventDuration,
+                top: eventTimeParameters.eventStart,
+                left: dayIndex === 0 ? 100 : dayIndex * 215 + 100,
+                name: event.eventName,
+                width: 215,
+                color: eventColor,
+              });
+            });
+          }
+        });
+      });
     });
   }
 }
