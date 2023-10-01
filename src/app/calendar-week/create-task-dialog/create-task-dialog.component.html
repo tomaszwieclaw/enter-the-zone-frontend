@@ -1,0 +1,34 @@
+<h1 mat-dialog-title>Create new task</h1>
+<div mat-dialog-content>
+  <form #dialogForm="ngForm">
+    <mat-form-field appearance="outline"  style="margin-top: 10px; width: 100%">
+      <mat-label>task name</mat-label>
+    <input matInput type="text"
+           name="eventName"
+           ngModel>
+    </mat-form-field>
+    <mat-form-field appearance="outline"  style="margin-top: 10px; width: 100%">
+      <mat-label>task duration (minutes)</mat-label>
+      <input matInput type="number"
+             name="durationMinutes"
+             ngModel>
+    </mat-form-field>
+<!--    <mat-form-field appearance="outline"  style="margin-top: 10px; width: 100%">-->
+<!--      <mat-label>Priority</mat-label>-->
+<!--      <input matInput type="text"-->
+<!--             name="priority"-->
+<!--             ngModel>-->
+<!--    </mat-form-field>-->
+
+    <mat-form-field>
+      <mat-label>Select</mat-label>
+      <mat-select ngModel name="priority">
+        <mat-option *ngFor="let priority of EventPriority| keyvalue " [value]="priority.key">{{priority.value}}</mat-option>
+      </mat-select>
+    </mat-form-field>
+  </form>
+</div>
+<div mat-dialog-actions>
+  <button mat-button mat-dialog-close>Close</button>
+  <button mat-button  (click)="creteTask(dialogForm)">Create task</button>
+</div>

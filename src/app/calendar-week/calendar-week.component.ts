@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
 import * as moment from 'moment';
+import { HttpService } from '../service/http.service';
+import { CreateTaskDialogComponent } from './create-task-dialog/create-task-dialog.component';
 
 @Component({
   selector: 'app-calendar-week',
@@ -8,45 +11,66 @@ import * as moment from 'moment';
 })
 
 export class CalendarWeekComponent implements OnInit {
-  public weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'sunday' ];
+  public weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday' ];
+  public static CALENDAR_START_HOUR = 9;
 
   timeColumn: string[] = [];
   events: ZoneUIEvent[] = [];
 
-  ngOnInit(): void {
-    this.timeColumn = this.getTime(9, 0, 8, 15);
-    this.getShedule().weeklySchedules.map((eventDay: { [key: string]: any }) => {
-      return this.weekdays.map(dayOfWeek => {
-        eventDay[dayOfWeek].scheduledEvents
-          // .filter((event: ScheduledEvent) => event.id === 'f87e4167-8748-4c8a-9af8-3e4da747658c')
-          .map((event: ScheduledEvent) => {
-            let dayIndex = this.weekdays.indexOf(dayOfWeek);
-            let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
-
-            this.events.push({
-              height: eventTimeParameters.eventDuration,
-              top: eventTimeParameters.eventStart,
-              left: dayIndex === 0 ? 135 : dayIndex * 135,
-              name: event.eventName,
-              width: 135,
-            });
-          });
-      });
-    });
+  constructor(public httpService: HttpService,
+              public dialog: MatDialog) {
   }
 
 
-  getTime(hours: number, startMinutes: number, durationHours: number = 60, step: number = 15) {
+  openDialog(enterAnimationDuration: string, exitAnimationDuration: string): void {
+    this.dialog.open(CreateTaskDialogComponent, {
+      width: '600px',
+      enterAnimationDuration,
+      exitAnimationDuration,
+    });
+  }
+  ngOnInit(): void {
+    this.httpService.getSchedules().subscribe(response => {
+      console.log('response', response.weeklySchedules);
+      response.weeklySchedules.map((eventDay: { [key: string]: any }) => {
+        return this.weekdays.map(dayOfWeek => {
+          console.log('day of week eventDay[dayOfWeek]', eventDay[dayOfWeek]);
+          if (eventDay[dayOfWeek]) {
+            console.log('Internal');
+            eventDay[dayOfWeek].scheduledEvents.map((event: ScheduledEvent) => {
+              let dayIndex = this.weekdays.indexOf(dayOfWeek);
+              let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
+              console.log(dayOfWeek, dayIndex);
+              let eventColor = this.getEventColor(event.eventType);
+              console.log('Event', eventColor, event.eventType);
+              this.events.push({
+                height: eventTimeParameters.eventDuration,
+                top: eventTimeParameters.eventStart,
+                left: dayIndex === 0 ? 100 : dayIndex * 215 + 100,
+                name: event.eventName,
+                width: 215,
+                color: eventColor,
+              });
+            });
+          }
+        });
+      });
+      console.log('this.events', this.events);
+    });
+    this.timeColumn = this.getTimeLine(CalendarWeekComponent.CALENDAR_START_HOUR, 0, 10, 15);
+  }
+
+  private getTimeLine(startHour: number, startMinute: number, durationHours: number = 10, stepMinute: number = 15) { //TODO Refactor this method
     const result = [];
     const date = new Date();
-    date.setHours(hours);
-    date.setMinutes(startMinutes);
+    date.setHours(startHour);
+    date.setMinutes(startMinute);
     var time = date.getTime();
     var mint = date.getMinutes();
-    result.push(this.handleZero(hours) + ':' + this.handleZero(startMinutes));
+    result.push(this.handleZero(startHour) + ':' + this.handleZero(startMinute));
 
-    for (var i = 1; i <= Math.ceil(durationHours * 60 / step); i++) {
-      var quarter_min = Math.ceil((mint / step)) * step + (i * step);
+    for (var i = 1; i <= Math.ceil(durationHours * 60 / stepMinute); i++) {
+      var quarter_min = Math.ceil((mint / stepMinute)) * stepMinute + (i * stepMinute);
       var d2 = new Date(time + (quarter_min - mint) * 60000);
       result.push(this.handleZero(d2.getHours()) + ':' + this.handleZero(d2.getMinutes()));
     }
@@ -198,6 +222,23 @@ export class CalendarWeekComponent implements OnInit {
       ],
     };
   }
+
+  private getEventColor(eventType: EventType): string {
+    console.log(' getEventColor eventType', eventType);
+    switch (eventType.toString()) {
+      case EventType.FIXED_MEETING:
+        return '#D9D9D9';
+      case EventType.IN_THE_ZONE:
+        return '#56CCF2';
+      case EventType.LUNCH:
+        return '#F8A04E';
+      case EventType.TASK:
+        return '#80CC28';
+      default:
+        console.log(eventType);
+        return '#D9D9D9';
+    }
+  }
 }
 
 
@@ -207,8 +248,8 @@ export interface ZoneUIEvent {
   top: number;
   left: number;
   name: string;
+  color: string;
 }
-
 
 export interface ScheduledEvent {
   id: string;
@@ -216,13 +257,38 @@ export interface ScheduledEvent {
   startTime: string;
   endTime: string;
   totalDurationMin: number;
-
+  priority: string;
+  eventType: EventType;
 }
 
-// {
-//   'id': '8042434b-0ef0-466d-9bed-76cd00fdaa1e',
-//   'eventName': 'Daily Scrum',
-//   'startTime': '09:00:00',
-//   'endTime': '09:15:00',
-//   'totalDurationMin': 15,
-// },
+export interface ScheduledResponse {
+  'lastUpdated': string,
+  'today': string,
+  'weeklySchedules': any[]
+}
+
+export interface CreateNewEventRequest {
+  'eventName': string; // "Sprint Demo",
+  'eventDate': string; // "2023-10-06",
+  'startTime': string; //'13:00:00',
+  'durationMinutes': number; // 60,
+  'priority': string; //'HIGH',
+  // 'minPreferredStartTime': null,
+  // 'maxPreferredStartTime': null
+}
+
+
+enum EventType {
+  FIXED_MEETING= "FIXED_MEETING",
+  TASK = "TASK",
+  LUNCH = "LUNCH",
+  IN_THE_ZONE = "IN_THE_ZONE"
+}
+
+export enum EventPriority {
+  LOW="Low",
+  NORMAL='Normal',
+  HIGH='High'
+}
+
+

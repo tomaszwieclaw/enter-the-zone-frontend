@@ -9,8 +9,12 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { AuthComponent } from './auth/auth.component';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
-import { Routes, RouterModule } from '@angular/router';
+import { RouterModule, Routes } from '@angular/router';
 import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
+import { HttpClientModule } from '@angular/common/http';
+import { MatDialogModule } from '@angular/material/dialog';
+import { CreateTaskDialogComponent } from './calendar-week/create-task-dialog/create-task-dialog.component';
+import { MatSelectModule } from '@angular/material/select';
 
 const routers: Routes = [
   // {path: '', component: AppComponent},
@@ -23,7 +27,8 @@ const routers: Routes = [
   declarations: [
     AppComponent,
     AuthComponent,
-    CalendarWeekComponent
+    CalendarWeekComponent,
+    CreateTaskDialogComponent
   ],
   imports: [
     BrowserModule,
@@ -32,8 +37,11 @@ const routers: Routes = [
     MatIconModule,
     MatToolbarModule,
     MatInputModule,
+    MatSelectModule,
     FormsModule,
-    RouterModule.forRoot(routers)
+    MatDialogModule,
+    RouterModule.forRoot(routers),
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

@@ -1,38 +1,42 @@
 .container {
   margin-top: 2rem;
   min-width: 945px;
-  width: 945px;
+  width: 1200px;
 
 }
 
 .weekday-row {
   display: flex;
   flex-direction: row;
-  justify-content: start;
+  /*justify-content: start;*/
   /*align-items: end;*/
+  /*border: 1px solid red;*/
 }
 
-.weekday-cell{
+.weekday-cell {
   height: 30px;
-  width: 135px;
-  min-width: 135px;
+  width: 215px;
+  min-width: 215px;
   text-align: center;
+
   /*Occupy all space */
   /*flex-grow: 1;*/
+  /*border: 1px solid black;*/
 }
 
 .time-cell {
   height: 30px;
-  width: 135px;
+  width: 100px;
+  min-width: 100px;
   text-align: center;
-  /*border: 1px solid gainsboro;*/
+  /*border: 1px solid greenyellow;*/
 
 }
 
 .event-cell {
   height: 30px;
   text-align: center;
-  border: 1px solid gainsboro;
+  border: 1px solid rgba(220, 220, 220, 0.35);
   flex-grow: 1;
 }
 
@@ -51,12 +55,17 @@
   border-radius: 5px;
   position: absolute;
   z-index: 1;
+  /*color: black;*/
+  border: 1px solid gray;
 
-  box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);
+  display: flex;
+  flex-flow: row;
+
+  /*box-shadow: 0 3px 10px rgb(0 0 0 / 0.2);*/
 
 }
 
-.actual-event:hover{
+.actual-event:hover {
   /*background-color: rgb(0, 196, 196);*/
   box-shadow: 0 5px 15px rgb(0 0 0 / 0.3);
 }

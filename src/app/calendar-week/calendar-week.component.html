@@ -1,7 +1,15 @@
 <div class="container ">
+  <button mat-fab extended
+          style="background-color: #D0BCFF; color: #381E72"
+          (click)="openDialog('0ms', '0ms')"
+  >
+    <mat-icon>add</mat-icon>
+    Create  task
+  </button>
+<!--  <button mat-raised-button (click)="openDialog('0ms', '0ms')">Open dialog without animation</button>-->
   <div class="weekday-row">
     <div class="time-cell"></div>
-    <div class="weekday-cell" *ngFor="let day of weekdays">{{day}}</div>
+    <div class="weekday-cell" *ngFor="let day of weekdays">{{day  | titlecase}}</div>
   </div>
 
   <div style="display:flex; flex-direction: row">
@@ -12,14 +20,14 @@
            [style.width.px]="event.width"
            [style.left.px]="event.left"
            [style.top.px]="event.top"
-           style="
-            background-color: lightgray;
-            display: flex;
-            flex-flow: row;
-         ">
-                <div>{{event.name}}</div>
-        <div style="margin-left: 15px; margin-top: 2px">
-          <mat-icon style="font-size: 14px;">syncalt</mat-icon>
+           [style.background-color]="event.color"
+      >
+        <div>{{event.name}}</div>
+        <span class="example-spacer"></span>
+        <div>
+          <div style=" margin-top: 2px">
+            <mat-icon style="font-size: 14px;">syncalt</mat-icon>
+          </div>
         </div>
       </div>
     </div>
@@ -31,10 +39,7 @@
 
     <div *ngFor="let column of weekdays" style="display:flex; flex-direction: column; flex-grow: 1">
       <div class="event-cell" *ngFor="let event of timeColumn">
-        <!--        {{column + '' + event}}-->
       </div>
-
     </div>
   </div>
-
 </div>
