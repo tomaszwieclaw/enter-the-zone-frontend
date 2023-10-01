@@ -8,6 +8,7 @@
 .weekday-row {
   display: flex;
   flex-direction: row;
+  margin-top: 30px;
   /*justify-content: start;*/
   /*align-items: end;*/
   /*border: 1px solid red;*/

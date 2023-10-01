@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import {MatDialog, MatDialogRef, MatDialogModule} from '@angular/material/dialog';
+import { MatDialog, MatDialogRef, MatDialogModule } from '@angular/material/dialog';
 import * as moment from 'moment';
 import { HttpService } from '../service/http.service';
 import { CreateTaskDialogComponent } from './create-task-dialog/create-task-dialog.component';
+import { trigger } from '@angular/animations';
 
 @Component({
   selector: 'app-calendar-week',
@@ -13,6 +14,8 @@ import { CreateTaskDialogComponent } from './create-task-dialog/create-task-dial
 export class CalendarWeekComponent implements OnInit {
   public weekdays = [ 'monday', 'tuesday', 'wednesday', 'thursday', 'friday' ];
   public static CALENDAR_START_HOUR = 9;
+  isLoading: boolean = false;
+
 
   timeColumn: string[] = [];
   events: ZoneUIEvent[] = [];
@@ -29,20 +32,18 @@ export class CalendarWeekComponent implements OnInit {
       exitAnimationDuration,
     });
   }
+
   ngOnInit(): void {
     this.httpService.getSchedules().subscribe(response => {
       console.log('response', response.weeklySchedules);
       response.weeklySchedules.map((eventDay: { [key: string]: any }) => {
         return this.weekdays.map(dayOfWeek => {
-          console.log('day of week eventDay[dayOfWeek]', eventDay[dayOfWeek]);
           if (eventDay[dayOfWeek]) {
-            console.log('Internal');
             eventDay[dayOfWeek].scheduledEvents.map((event: ScheduledEvent) => {
               let dayIndex = this.weekdays.indexOf(dayOfWeek);
               let eventTimeParameters = this.getEventTimeParameters(event.startTime, event.endTime);
               console.log(dayOfWeek, dayIndex);
               let eventColor = this.getEventColor(event.eventType);
-              console.log('Event', eventColor, event.eventType);
               this.events.push({
                 height: eventTimeParameters.eventDuration,
                 top: eventTimeParameters.eventStart,
@@ -55,7 +56,6 @@ export class CalendarWeekComponent implements OnInit {
           }
         });
       });
-      console.log('this.events', this.events);
     });
     this.timeColumn = this.getTimeLine(CalendarWeekComponent.CALENDAR_START_HOUR, 0, 10, 15);
   }
@@ -224,7 +224,6 @@ export class CalendarWeekComponent implements OnInit {
   }
 
   private getEventColor(eventType: EventType): string {
-    console.log(' getEventColor eventType', eventType);
     switch (eventType.toString()) {
       case EventType.FIXED_MEETING:
         return '#D9D9D9';
@@ -235,9 +234,18 @@ export class CalendarWeekComponent implements OnInit {
       case EventType.TASK:
         return '#80CC28';
       default:
-        console.log(eventType);
         return '#D9D9D9';
     }
+  }
+
+  protected readonly trigger = trigger;
+
+  triggerRecalculation() {
+    this.isLoading = true;
+    this.httpService.recalculate().subscribe(repsonse => {
+      this.isLoading = false;
+      console.log('Recalculation done', repsonse);
+    });
   }
 }
 
@@ -279,16 +287,16 @@ export interface CreateNewEventRequest {
 
 
 enum EventType {
-  FIXED_MEETING= "FIXED_MEETING",
-  TASK = "TASK",
-  LUNCH = "LUNCH",
-  IN_THE_ZONE = "IN_THE_ZONE"
+  FIXED_MEETING = 'FIXED_MEETING',
+  TASK = 'TASK',
+  LUNCH = 'LUNCH',
+  IN_THE_ZONE = 'IN_THE_ZONE'
 }
 
 export enum EventPriority {
-  LOW="Low",
-  NORMAL='Normal',
-  HIGH='High'
+  LOW = 'Low',
+  NORMAL = 'Normal',
+  HIGH = 'High'
 }
 
 

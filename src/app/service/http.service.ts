@@ -18,10 +18,12 @@ export class HttpService {
     return this.httpClient.get<ScheduledResponse>(this.SERVER_URL + 'schedules');
   }
 
-  public createTask(taskPayload: {scheduledEvents: CreateTaskRequest[] }): void{
-     this.httpClient.post<any>(this.SERVER_URL + 'scheduled-events',taskPayload).subscribe(response => {
-       console.log("==>>> resp", response);
-     });
+  public createTask(taskPayload: {scheduledEvents: CreateTaskRequest[] }): Observable<any>{
+   return   this.httpClient.post<any>(this.SERVER_URL + 'scheduled-events',taskPayload);
+  }
+
+  recalculate() {
+    return this.httpClient.post(this.SERVER_URL +"schedules/recalculate", {});
   }
 }
 

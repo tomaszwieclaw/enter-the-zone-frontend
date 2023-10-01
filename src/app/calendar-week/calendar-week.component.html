@@ -1,12 +1,20 @@
+<mat-progress-bar *ngIf="isLoading" mode="indeterminate"></mat-progress-bar>
 <div class="container ">
   <button mat-fab extended
-          style="background-color: #D0BCFF; color: #381E72"
+          style="background-color: #D0BCFF; color: #381E72; margin-left: 100px;"
           (click)="openDialog('0ms', '0ms')"
   >
     <mat-icon>add</mat-icon>
-    Create  task
+    Create task
   </button>
-<!--  <button mat-raised-button (click)="openDialog('0ms', '0ms')">Open dialog without animation</button>-->
+  <button mat-fab extended
+          style="background-color: #D0BCFF; color: #381E72; margin-left: 20px"
+          (click)="triggerRecalculation()"
+  >
+    <mat-icon>syncalt</mat-icon>
+    Recalculation
+  </button>
+  <!--  <button mat-raised-button (click)="openDialog('0ms', '0ms')">Open dialog without animation</button>-->
   <div class="weekday-row">
     <div class="time-cell"></div>
     <div class="weekday-cell" *ngFor="let day of weekdays">{{day  | titlecase}}</div>
@@ -25,18 +33,17 @@
         <div>{{event.name}}</div>
         <span class="example-spacer"></span>
         <div>
-          <div style=" margin-top: 2px">
-            <mat-icon style="font-size: 14px;">syncalt</mat-icon>
-          </div>
+<!--          <div style=" margin-top: 2px">-->
+<!--            <mat-icon style="font-size: 14px;">syncalt</mat-icon>-->
+<!--          </div>-->
         </div>
       </div>
     </div>
     <div style="display:flex; flex-direction: column">
-      <div *ngFor="let time of  timeColumn">
+      <div *ngFor="let time of timeColumn">
         <div class="time-cell">{{time}}</div>
       </div>
     </div>
-
     <div *ngFor="let column of weekdays" style="display:flex; flex-direction: column; flex-grow: 1">
       <div class="event-cell" *ngFor="let event of timeColumn">
       </div>

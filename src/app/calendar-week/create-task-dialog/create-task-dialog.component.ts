@@ -10,17 +10,19 @@ import { HttpService } from '../../service/http.service';
   styleUrls: [ './create-task-dialog.component.css' ],
 })
 export class CreateTaskDialogComponent {
+  public isLoading: boolean = false;
+  protected readonly EventPriority = EventPriority;
+
   constructor(public dialogRef: MatDialogRef<CreateTaskDialogComponent>, public httpService: HttpService) {
   }
 
-  protected readonly EventPriority = EventPriority;
-
   creteTask(dialogForm: NgForm) {
-    console.log(dialogForm.value);
-
     let payload = Object.assign({}, { scheduledEvents: [ { ...dialogForm.value, eventType: 'TASK' } ] });
-    console.log('paylaod', payload);
-    this.httpService.createTask(payload);
+    this.isLoading = true;
+    this.httpService.createTask(payload).subscribe(response => {
+      dialogForm.reset();
+      this.isLoading = false;
+    });
   }
 }
 

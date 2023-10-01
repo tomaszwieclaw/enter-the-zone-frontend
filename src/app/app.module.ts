@@ -15,6 +15,8 @@ import { HttpClientModule } from '@angular/common/http';
 import { MatDialogModule } from '@angular/material/dialog';
 import { CreateTaskDialogComponent } from './calendar-week/create-task-dialog/create-task-dialog.component';
 import { MatSelectModule } from '@angular/material/select';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatDividerModule } from '@angular/material/divider';
 
 const routers: Routes = [
   // {path: '', component: AppComponent},
@@ -38,6 +40,8 @@ const routers: Routes = [
     MatToolbarModule,
     MatInputModule,
     MatSelectModule,
+    MatProgressBarModule,
+    MatDividerModule,
     FormsModule,
     MatDialogModule,
     RouterModule.forRoot(routers),
