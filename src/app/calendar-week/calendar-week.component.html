@@ -1,0 +1,40 @@
+<div class="container ">
+  <div class="weekday-row">
+    <div class="time-cell"></div>
+    <div class="weekday-cell" *ngFor="let day of weekdays">{{day}}</div>
+  </div>
+
+  <div style="display:flex; flex-direction: row">
+    <div style="position: relative">
+      <div class="actual-event"
+           *ngFor="let event of events"
+           [style.height.px]="event.height"
+           [style.width.px]="event.width"
+           [style.left.px]="event.left"
+           [style.top.px]="event.top"
+           style="
+            background-color: lightgray;
+            display: flex;
+            flex-flow: row;
+         ">
+                <div>{{event.name}}</div>
+        <div style="margin-left: 15px; margin-top: 2px">
+          <mat-icon style="font-size: 14px;">syncalt</mat-icon>
+        </div>
+      </div>
+    </div>
+    <div style="display:flex; flex-direction: column">
+      <div *ngFor="let time of  timeColumn">
+        <div class="time-cell">{{time}}</div>
+      </div>
+    </div>
+
+    <div *ngFor="let column of weekdays" style="display:flex; flex-direction: column; flex-grow: 1">
+      <div class="event-cell" *ngFor="let event of timeColumn">
+        <!--        {{column + '' + event}}-->
+      </div>
+
+    </div>
+  </div>
+
+</div>

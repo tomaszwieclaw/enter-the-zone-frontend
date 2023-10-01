@@ -10,17 +10,20 @@ import { AuthComponent } from './auth/auth.component';
 import { MatInputModule } from '@angular/material/input';
 import { FormsModule } from '@angular/forms';
 import { Routes, RouterModule } from '@angular/router';
+import { CalendarWeekComponent } from './calendar-week/calendar-week.component';
 
 const routers: Routes = [
   // {path: '', component: AppComponent},
-  {path: 'auth', component: AuthComponent}
+  {path: 'auth', component: AuthComponent},
+  {path: 'week', component: CalendarWeekComponent}
 ]
 
 
 @NgModule({
   declarations: [
     AppComponent,
-    AuthComponent
+    AuthComponent,
+    CalendarWeekComponent
   ],
   imports: [
     BrowserModule,
