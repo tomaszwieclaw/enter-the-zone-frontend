@@ -125,6 +125,7 @@ export class CalendarWeekComponent implements OnInit {
           }
         });
       });
+      console.log(this.events);
     });
   }
 }
